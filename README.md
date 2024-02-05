@@ -40,3 +40,112 @@ npm run build
 ```
 yarn build
 ```
+## Архитектура
+> Может быть изменена в ходе реализации
+> Реализована по примеру проекта "Оно тебе надо"
+### Базовый слой
+#### Класс ```EventEmitter```
+Класс для сохранения событий:
+ - установка и снятие слушателей,
+ - вызов слушателей при возникновении события.
+```
+type EventName = string | RegExp;
+type Subscriber = Function;
+type EmitterEvent = {
+    eventName: string,
+    data: unknown
+};
+```
+```
+export interface IEvents {
+	on<T extends object>(event: EventName, callback: (data: T) => void): void;
+
+	emit<T extends object>(event: string, data?: T): void;
+
+	trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void;
+}
+```
+
+#### Класс ```API```
+Интерфейс для работы с API:
+ - отправка GET запросов,
+ - отправка POST запросов.
+ ```
+ export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
+ ```
+
+#### Класс ```Component```
+Базовый класс компонента:
+ - установка и снятие классов элементов,
+ - добавление текста в элемент,
+ - изменение активности элемента,
+ - возврат DOM-элементов.
+
+
+#### Класс ```Model```
+Базовая модель, чтобы можно было отличить ее от простых объектов с данными.
+
+### Модель данных
+#### Класс ```Page```
+Отображение элементов на странице:
+ - каталог,
+ - счетчик товаров в корзине.
+ ```
+interface IPage {
+    counter: number;
+    catalog: HTMLElement[];
+    locked: boolean;
+}
+```
+
+#### Класс ```OrderForm```
+Интерфейс карточки заказа:
+ - отображение способа оплаты и метода доставки.
+ ```
+ export interface IOrderForm {
+	email: string;
+	phone: string;
+}
+```
+####  Класс ```PersonalForm```
+Интерфейс работы с модалкой перс. данных:
+ - email, номер телефона.
+
+
+### Представление
+#### Класс ```Modal```
+Интерфейс модального окна:
+ - открывть и закрывать модалки,
+ - слушать события.
+ ```
+ export interface IModal {
+	header?: ViewElement;
+	content: ViewElement;
+	actions: ViewElement[];
+}
+```
+
+ #### Класс ```Cart```
+ Интерфейс модалки корзины:
+  - добавление товаров,
+  - удаление товаров.
+```
+interface IBasketView {
+    items: HTMLElement[];
+    total: number;
+    selected: string[];
+}
+```
+
+#### Класс ```Success```
+Интерфейс модалки успешного заказа:
+ - сумма заказа.
+ ```
+ interface ISuccess {
+    total: number;
+}
+```
+
+
+
+
