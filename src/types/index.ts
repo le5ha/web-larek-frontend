@@ -21,9 +21,7 @@ export interface IGetItems {
 }
 
 export interface IModal {
-	header?: ViewElement;
-	content: ViewElement;
-	actions: ViewElement[];
+	content:HTMLElement[];
 }
 
 interface IBasketView {

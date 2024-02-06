@@ -167,6 +167,15 @@ interface IPage {
 
 #### Класс ```AppData```
 Содержит состояние данных страницы.
+Имеет методы:
+ - **setCatalog** - устанавливает каталог;
+ - **setPreview** - устанавливает данные для превью товара;
+ - **addToCart** - добавляет товары в корзину;
+ - ***deleteFromCart** - удаляет товары из корзины;
+ - **getTotat** - возвращает информацию об общей стоимости товаров;
+ - **validateOrder** - проверяет корректность заказа;
+ - **setOrderField** - сохраняет полученные данные из формы.
+
 
 #### Класс ```LarekAPI```
 Служит для получения данных о товарах с сервера.
@@ -187,12 +196,10 @@ interface IGetItems {
  - открывть и закрывать модалки,
  - слушать события.
 
- Наследует ```Component``` и использует интерфейс ```IModal```:
+ Наследует ```Component``` и использует интерфейс ```IModal``` (исправлено):
  ```
- export interface IModal {
-	header?: ViewElement;
-	content: ViewElement;
-	actions: ViewElement[];
+export interface IModal {
+	content:HTMLElement[];
 }
 ```
 Имеет поля типа ```HTMLElement``` и методы:
