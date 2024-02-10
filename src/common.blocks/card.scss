@@ -64,9 +64,6 @@
     &_soft {
       background-color: $category1;
     }
-    &_hard {
-      background-color: $category5;
-    }
     &_other {
       background-color: $category2;
     }
@@ -75,6 +72,9 @@
     }
     &_button {
       background-color: $category4;
+    }
+    &_hard {
+      background-color: $category5;
     }
   }
   &__action {

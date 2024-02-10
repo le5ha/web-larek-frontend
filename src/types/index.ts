@@ -36,8 +36,16 @@ interface IFormState {
 }
 
 export interface IOrderForm {
-	method: string;
+	payment: string;
 	address: string;
+	email: string;
+	phone: string;
+}
+
+
+export interface IOrder extends IOrderForm {
+	total: number;
+	items: string[];
 }
 
 export interface IContactsForm {
@@ -48,3 +56,20 @@ export interface IContactsForm {
 interface ISuccess {
     total: number;
 }
+export interface ILarekApi {
+    getProductList: () => Promise<IProduct[]>;
+    getProductInfo: (id: string) => Promise<IProduct>;
+	orderProducts: (order: IOrder) => Promise<IOrderResult>;
+}
+
+// переписать
+export interface ICardActions {
+	onClick: (event: MouseEvent) => void;
+}
+
+export interface IOrderResult {
+	id: string;
+	total: number;
+}
+
+export type FormErrors = Partial<Record<keyof IOrderForm, string>>;
