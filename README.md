@@ -108,11 +108,8 @@ export interface IEvents {
 
  Экземпляр класса имеет свойство ```container: HTMLElement```
  Методы класса:
-  - **toggleClass** - переключает класс элемента;
   - **setText** – устанавливает текст в элемент;
   - **setDisabled** - меняет статус блокировки элемента;
-  - **setHidden** - скрывает элемент;
-  - **setVisible** - показывает элемент;
   - **setImage** – устанавливает изображение и альтернативный текст;
   - **render** - возвращает элемент.
 
@@ -154,10 +151,11 @@ export interface IProduct {
 Имеет поля типа ```HTMLElement``` и методы, которые устанавливают значения в поля:
  - **set id**;
  - **set title**;
- - **set category**;
  - **set image**;
- - **set description**;
+  - **set description**;
+ - **set category**;
  - **set price**;
+ - **render** - возвращает карточку.
 
  #### Класс ```Page```
 Отображение элементов на странице:
@@ -167,6 +165,7 @@ export interface IProduct {
 Имеет поля типа ```HTMLElement```.
 Методы класса:
  - **set counter** – устанавливает счетчик элементов в корзине;
+ - **set locked** - блокирует страничку;
  - **set catalog** - отображает каталог товаров.
 
  Наследуется от класса ```Component``` и реализует интерфейс ```IPage```.
@@ -194,6 +193,8 @@ export interface IModal {
  - **close** - закрывает модалку;
  - **set content** - добавляет контент в модалку;
  - **render** - возвращает модалку.
+ 
+ В модалке реализовано сохранение позиции скролла пользователя для улучшения UX при просмотре карточек товаров.
 
  #### Класс ```Cart```
  Интерфейс модалки корзины:
@@ -210,8 +211,7 @@ interface IBasketView {
 Все поля класса имеют тип ```HTMLElement```.
 Методы класса:
  - ***set items*** – устанавливает элементы в корзину;
- - **set total** - устанавливает общую стоимость или отображает "Корзина пуста";
- - **set selected** - выбирает элементы в корзине.
+ - **set total** - устанавливает общую стоимость или отображает "Корзина пуста".
 
  #### Класс ```Form```
 Базовый класс форм наследует ```Component``` и использует интерфейс IFormState. 
@@ -226,6 +226,7 @@ interface IFormState {
  - **set errors**,
  - **render**.
 
+
 #### Класс ```OrderForm```
 Интерфейс карточки заказа:
  - отображение способа оплаты и метода доставки.
@@ -237,7 +238,7 @@ export interface IOrderForm {
 }
 ```
 Методы:
- - **set method**,
+ - **selectmethodPaymen**,
  - **set adress**.
 ####  Класс ```PersonalForm```
 Интерфейс перс данных:
@@ -262,6 +263,11 @@ export interface IContactsForm {
     total: number;
 }
 ```
+```
+export interface ISuccessActions {
+	onClick: () => void;
+} 
+```
 
 
 
@@ -274,9 +280,16 @@ interface IGetItems {
     getItemsInfo: (id: string) => Promise<IProduct>
 }
 ```
+```
+export interface IOrderResult {
+	id: string;
+	total: number;
+}
+``` 
 Методы класса:
  - **getItemList** - получение списка товаров;
- - **getItemInfo** - получение информации о товаре с сервера.
+ - **getItemInfo** - получение информации о товаре с сервера;
+ - **orderProducts** - отправка заказа.
 
 
 

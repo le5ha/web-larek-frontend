@@ -1,4 +1,3 @@
-export type ProductCategory = 'софт-скил' | 'хард-скил' | 'кнопка' | 'дополнительное' | 'другое';
 export interface IProduct {
 	id: string;
 	title: string;
@@ -8,31 +7,37 @@ export interface IProduct {
 	category: ProductCategory;
 }
 
+export type ProductCategory =
+	| 'софт-скил'
+	| 'хард-скил'
+	| 'кнопка'
+	| 'дополнительное'
+	| 'другое';
+
 export interface IPage {
-    counter: number;
-    catalog: HTMLElement[];
-    locked: boolean;
+	counter: number;
+	catalog: HTMLElement[];
+	locked: boolean;
 }
 
-
 export interface IGetItems {
-    getItemsList: () => Promise<IProduct[]>
-    getItemsInfo: (id: string) => Promise<IProduct>
+	getItemsList: () => Promise<IProduct[]>;
+	getItemsInfo: (id: string) => Promise<IProduct>;
 }
 
 export interface IModal {
-	content:HTMLElement[];
+    content: HTMLElement;
 }
 
-interface IBasketView {
-    items: HTMLElement[];
-    total: number;
-    selected: string[];
+export interface IBasketView {
+	items: HTMLElement[];
+	total: number;
+	selected: string[];
 }
 
-interface IFormState {
-    valid: boolean;
-    errors: string[];
+export interface IOrder extends IOrderForm {
+	total: number;
+	items: string[];
 }
 
 export interface IOrderForm {
@@ -42,10 +47,9 @@ export interface IOrderForm {
 	phone: string;
 }
 
-
-export interface IOrder extends IOrderForm {
+export interface IOrderResult {
+	id: string;
 	total: number;
-	items: string[];
 }
 
 export interface IContactsForm {
@@ -53,23 +57,28 @@ export interface IContactsForm {
 	phone: string;
 }
 
-interface ISuccess {
-    total: number;
-}
-export interface ILarekApi {
-    getProductList: () => Promise<IProduct[]>;
-    getProductInfo: (id: string) => Promise<IProduct>;
-	orderProducts: (order: IOrder) => Promise<IOrderResult>;
+export interface ISuccess {
+	total: number;
 }
 
-// переписать
+export interface ISuccessActions {
+	onClick: () => void;
+} 
+
+
 export interface ICardActions {
 	onClick: (event: MouseEvent) => void;
 }
 
-export interface IOrderResult {
-	id: string;
-	total: number;
+export interface IFormState {
+	valid: boolean;
+	errors: string[];
 }
 
 export type FormErrors = Partial<Record<keyof IOrderForm, string>>;
+
+export interface ILarekApi {
+	getProductList: () => Promise<IProduct[]>;
+	getProductInfo: (id: string) => Promise<IProduct>;
+	orderProducts: (order: IOrder) => Promise<IOrderResult>;
+}
