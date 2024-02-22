@@ -16,13 +16,13 @@ export class OrderForm extends Form<Pick<IOrderForm, 'payment' | 'address'>> {
 		);
 		this._methodButtons.forEach((btn) => {
 			btn.addEventListener('click', () => {
-				this.selectmethodPayment(btn);
+				this.selectMethodPayment(btn);
 				this.onInputChange('payment', btn.name);
 			});
 		});
 	}
 
-	selectmethodPayment(button: HTMLButtonElement) {
+	selectMethodPayment(button: HTMLButtonElement) {
 		this._methodButtons.forEach((btn) => {
 			btn.classList.remove('button_alt-active');
 		});

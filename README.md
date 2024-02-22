@@ -113,11 +113,6 @@ export interface IEvents {
   - **setImage** – устанавливает изображение и альтернативный текст;
   - **render** - возвращает элемент.
 
-#### Класс ```Model```
-Базовая модель, чтобы можно было отличить ее от простых объектов с данными.
-Метод:
- - **emitChanges** - сообщает об изменениях.
-
 ### Модель данных
 #### Класс ```AppData```
 Содержит состояние данных страницы.
@@ -127,8 +122,11 @@ export interface IEvents {
  - **addToCart** - добавляет товары в корзину;
  - ***deleteFromCart** - удаляет товары из корзины;
  - **getTotat** - возвращает информацию об общей стоимости товаров;
- - **validateOrder** - проверяет корректность заказа;
- - **setOrderField** - сохраняет полученные данные из формы.
+ - **getCartItems** - возвращает состав корзины;
+ - **clearCart** - очищает корзину;
+ - **setOrderField** - сохраняет полученные данные из формы;
+ - **setOrderItems** - устанавливает данные заказа;
+ - **validateOrder** - проверяет корректность заказа.
 
 ### Представление```
 
@@ -152,9 +150,10 @@ export interface IProduct {
  - **set id**;
  - **set title**;
  - **set image**;
-  - **set description**;
+ - **set description**;
  - **set category**;
  - **set price**;
+ - **setDeleteButton**;
  - **render** - возвращает карточку.
 
  #### Класс ```Page```
@@ -238,7 +237,7 @@ export interface IOrderForm {
 }
 ```
 Методы:
- - **selectmethodPaymen**,
+ - **selectMethodPaymen**,
  - **set adress**.
 ####  Класс ```PersonalForm```
 Интерфейс перс данных:

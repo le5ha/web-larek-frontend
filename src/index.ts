@@ -5,13 +5,13 @@ import { EventEmitter } from './components/base/events';
 import { LarekApi } from './components/LarekApi';
 import { CDN_URL, API_URL } from './utils/constants';
 import { Page } from './components/Page';
-import { AppData, ProductItem } from './components/AppData';
+import { AppData } from './components/AppData';
 import { IProduct, IOrder, IOrderForm } from './types';
 import { Card } from './components/Card';
 import { Modal } from './components/common/Modal';
 import { Cart } from './components/common/Cart';
 import { OrderForm } from './components/OrderForm';
-import { PersonalForm } from './components/ContactsForm';
+import { PersonalForm } from './components/PersonalForm';
 import { Success } from './components/common/Success';
 
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
@@ -30,7 +30,7 @@ const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 const basket = new Cart(cloneTemplate(basketTemplate), events);
 const order = new OrderForm(cloneTemplate(orderTemplate), events);
 const contacts = new PersonalForm(cloneTemplate(contactsTemplate), events);
-// слушатели 
+// слушатели
 // создаем карточки товаров
 events.on<IProduct>('items:show', () => {
 	page.catalog = appData.catalog.map((item) => {
@@ -47,33 +47,47 @@ events.on<IProduct>('items:show', () => {
 		});
 	});
 });
-// 
-events.on('card:select', (item: ProductItem) => {
+//
+events.on('card:select', (item: IProduct) => {
 	appData.setPreview(item);
 });
 // при добавлении товара закидываем его в данные приложения и обновляем счетчик корзины
-events.on('product:order', (item: ProductItem) => {
+events.on('product:order', (item: IProduct) => {
+	// презентер обновляет модель
 	appData.addToCart(item);
+	// презентер обновляет представление
 	page.counter = appData.basket.length;
 });
 // в превью показываем инфу у о товаре
-events.on('preview:show', (item: ProductItem) => {
-	const showItem = (item: ProductItem) => {
+events.on('preview:show', (item: IProduct) => {
+	const isInCart: boolean = appData.basket.some(
+		(i) => i.id === appData.preview
+	);
+	// console.log(isInCart);
+	const showItem = (item: IProduct) => {
 		const card = new Card(cloneTemplate(cardPreviewTemplate), {
 			onClick: () => {
-				events.emit('product:order', item);
-				modal.close();
+				if (isInCart) {
+					events.emit('card:delete', item);
+					modal.close();
+				} else {
+					events.emit('product:order', item);
+					modal.close();
+				}
 			},
 		});
 		modal.render({
-			content: card.render({
-				title: item.title,
-				image: item.image,
-				description: item.description,
-				price: item.price,
-				category: item.category,
-				id: item.id,
-			}),
+			content: card.render(
+				{
+					title: item.title,
+					image: item.image,
+					description: item.description,
+					price: item.price,
+					category: item.category,
+					id: item.id,
+				},
+				isInCart
+			),
 		});
 	};
 
@@ -91,9 +105,16 @@ events.on('preview:show', (item: ProductItem) => {
 		modal.close();
 	}
 });
-// обновляем данные в корзине, когда открываем ее
+// открытие модалки корзины
 events.on('basket:open', () => {
-	basket.items = appData.basket.map((item) => {
+	events.emit('basket:update');
+	modal.render({
+		content: createElement<HTMLElement>('div', {}, [basket.render()]),
+	});
+});
+// обновление корзины
+events.on('basket:update', () => {
+	basket.items = appData.getCartItems().map((item) => {
 		const card = new Card(cloneTemplate(cardBasketTemplate), {
 			onClick: () => events.emit('card:delete', item),
 		});
@@ -103,18 +124,20 @@ events.on('basket:open', () => {
 			id: item.id,
 		});
 	});
-	basket.total = appData.getTotal();
-	modal.render({
-		content: createElement<HTMLElement>('div', {}, [basket.render()]),
-	});
+	basket.total = appData
+		.getCartItems()
+		.reduce((total, item) => total + item.price, 0);
 });
 // удаляем товар из корзины, данных приложения и счетчика корзины
-events.on('card:delete', (item: ProductItem) => {
+// презентер обрабатывает событие 'card:delete'
+events.on('card:delete', (item: IProduct) => {
+	// презентер обновляет модель
 	appData.deleteFromCart(item);
+	// презентер обновляет представление
 	page.counter = appData.basket.length;
 	events.emit('basket:open');
 });
-// валидация форм 
+// валидация форм
 events.on(
 	'formErrors:change',
 	({ payment, address, email, phone }: Partial<IOrder>) => {
@@ -144,7 +167,6 @@ events.on(
 );
 // рендер формы заказа
 events.on('order:open', () => {
-	console.log('order:open event received');
 	modal.render({
 		content: order.render({
 			payment: '',
@@ -166,25 +188,25 @@ events.on('order:submit', () => {
 	});
 });
 // заказ продуктов и отрисовка успешного окна заказа
+// презентер обрабатывает событие 'contacts:submit'
 events.on('contacts:submit', () => {
-	appData.order.total = appData.getTotal();
+	// презентер обновляет модель
+	appData.setOrderItems();
 	api
 		.orderProducts(appData.order)
 		.then((res) => {
-			try {
-				const success = new Success(cloneTemplate(successTemplate), {
-					onClick: () => {
-						console.log('contacts:submit');
-						modal.close();
-					},
-				});
-				success.setTotal(appData.getTotal());
-				modal.render({
-					content: success.render({}),
-				});
-			} catch (err) {
-				console.error(err);
-			}
+			// презентер обновляет представление
+			const success = new Success(cloneTemplate(successTemplate), {
+				onClick: () => {
+					modal.close();
+				},
+			});
+			success.setTotal(appData.getTotal());
+			modal.render({
+				content: success.render({}),
+			});
+			appData.clearCart();
+			page.counter = appData.basket.length;
 		})
 		.catch((err) => {
 			console.error(err);
