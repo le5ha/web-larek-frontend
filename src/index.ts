@@ -60,9 +60,7 @@ events.on('product:order', (item: IProduct) => {
 });
 // в превью показываем инфу у о товаре
 events.on('preview:show', (item: IProduct) => {
-	const isInCart: boolean = appData.basket.some(
-		(i) => i.id === appData.preview
-	);
+	const isInCart: boolean = appData.isInCart(appData.preview);
 	// console.log(isInCart);
 	const showItem = (item: IProduct) => {
 		const card = new Card(cloneTemplate(cardPreviewTemplate), {
@@ -92,22 +90,13 @@ events.on('preview:show', (item: IProduct) => {
 	};
 
 	if (item) {
-		api
-			.getProductInfo(item.id)
-			.then((result) => {
-				item.description = result.description;
-				showItem(item);
-			})
-			.catch((err) => {
-				console.error(err);
-			});
+		showItem(item);
 	} else {
 		modal.close();
 	}
 });
 // открытие модалки корзины
 events.on('basket:open', () => {
-	events.emit('basket:update');
 	modal.render({
 		content: createElement<HTMLElement>('div', {}, [basket.render()]),
 	});
@@ -131,11 +120,8 @@ events.on('basket:update', () => {
 // удаляем товар из корзины, данных приложения и счетчика корзины
 // презентер обрабатывает событие 'card:delete'
 events.on('card:delete', (item: IProduct) => {
-	// презентер обновляет модель
-	appData.deleteFromCart(item);
-	// презентер обновляет представление
-	page.counter = appData.basket.length;
-	events.emit('basket:open');
+    appData.deleteFromCart(item);
+    page.counter = appData.basket.length;
 });
 // валидация форм
 events.on(

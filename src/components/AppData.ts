@@ -32,10 +32,12 @@ export class AppData {
 
 	addToCart(item: IProduct) {
 		this.basket.push(item);
+		this.events.emit('basket:update');
 	}
 
 	deleteFromCart(item: IProduct) {
 		this.basket = this.basket.filter((i) => i.id !== item.id);
+		this.events.emit('basket:update');
 	}
 
 	getCartItems() {
@@ -90,5 +92,9 @@ export class AppData {
 		this.formErrors = errors;
 		this.events.emit('formErrors:change', this.formErrors);
 		return Object.keys(errors).length === 0;
+	}
+
+	isInCart(itemId: string): boolean {
+		return this.basket.some(item => item.id === itemId);
 	}
 }
